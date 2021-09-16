@@ -1,0 +1,28 @@
+.nav-container {
+	padding: 3rem 0;
+	display: flex;
+	justify-content: space-between;
+	flex-grow: 1;
+	align-items: center;
+}
+
+.wallet-connect {
+	border: none;
+	outline: none;
+	padding: 1rem;
+	background-color: rgb(230, 152, 36);
+	border-radius: 10px;
+	font-size: 16px;
+	font-weight: 600;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.logo {
+	font-size: 25px;
+	color: rgb(83, 5, 83);
+	text-transform: lowercase;
+	font-family: fantasy;
+}

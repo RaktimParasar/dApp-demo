@@ -1,0 +1,122 @@
+.connect-modal {
+	width: 350px !important;
+}
+
+.modal-container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	margin-top: 2rem;
+}
+
+.modal-container h3 {
+	font-size: 22px;
+	font-weight: 500;
+}
+
+.modal-container p {
+	font-size: 15px;
+	color: #657786;
+}
+
+.connect-container {
+	margin-top: 2rem;
+}
+
+.walletconnect-qrcode__image {
+	height: 250px;
+	width: 250px;
+}
+
+.walletconnect-modal__base {
+	max-width: 400px !important;
+}
+
+.connect-item {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	border-radius: 6px;
+	width: 310px;
+	padding: 0.5rem 1rem;
+	transition: all 0.5s;
+	margin-bottom: 1rem;
+	outline: none;
+}
+
+.connect-item h1 {
+	font-size: 20px;
+	padding-top: 0.5rem;
+	font-weight: 400 !important;
+	font-size: 18px !important;
+}
+
+.connect-item img {
+	width: 30px;
+	height: 30px;
+}
+
+.connect-item img:last-child {
+	width: 20px;
+	height: 20px;
+}
+
+.connect-item:hover {
+	cursor: pointer;
+	box-shadow: rgb(20 21 26/10%) 0px 0px 1px, rgb(71 77 87/8%) 0px 7px 14px,
+		rgb(20 21 26/8%) 0px 3px 6px;
+}
+
+.spinner-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 5rem;
+	margin-bottom: 5rem;
+}
+
+.connect-modal .ant-spin-dot-item {
+	background-color: #000 !important;
+}
+
+.disconnect-wallet {
+	cursor: pointer;
+	border: 1px solid #000 !important;
+	background-color: #000 !important;
+	color: #fff !important;
+	padding: 0.5rem 2rem;
+	margin-top: 1.3rem;
+	border-radius: 3px;
+	font-weight: 600;
+	outline: none;
+	transition: all 0.5s;
+}
+
+.wallet-address {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-bottom: 8px;
+	color: #000;
+	font-weight: 600;
+	line-height: 1.5;
+	font-size: 14px;
+}
+
+@media only screen and (max-width: 350px) {
+	.connect-item {
+		max-width: 310px;
+		width: 100%;
+	}
+
+	.connect-item > img {
+		margin-right: 8px;
+	}
+
+	.connect-item h1 {
+		text-align: center;
+	}
+}
