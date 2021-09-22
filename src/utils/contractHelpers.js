@@ -41,7 +41,7 @@ export const getETHBalance = (address) =>
 		}
 	});
 
-export const getAllowance = (address, address2) => {
+export const getAllowance = (address, address2) =>
 	new Promise(async (resolve, reject) => {
 		try {
 			const tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, KOVAN_PROVIDER);
@@ -59,9 +59,8 @@ export const getAllowance = (address, address2) => {
 			});
 		}
 	});
-};
 
-export const approveToken = (address, amount, signer) => {
+export const approveToken = (address, amount, signer) =>
 	new Promise(async (resolve, reject) => {
 		try {
 			const tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, signer);
@@ -78,4 +77,3 @@ export const approveToken = (address, amount, signer) => {
 			});
 		}
 	});
-};

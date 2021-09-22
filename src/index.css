@@ -12,6 +12,10 @@ button:focus {
 	cursor: pointer;
 }
 
+.main-container {
+	padding-bottom: 2rem;
+}
+
 .main-wallet {
 	background: rgba(185, 204, 238, 0.5);
 	padding: 2rem;

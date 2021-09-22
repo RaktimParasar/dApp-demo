@@ -5,7 +5,7 @@ import { useStateWithCallbackLazy } from "use-state-with-callback";
 import Container from "@material-ui/core/Container";
 
 import { ConnectModal } from "./components/modals";
-import { Navbar } from "./components";
+import { Navbar, Account, Approve, Allowance } from "./components";
 import {
 	getETHBalance,
 	getTNodeBalance,
@@ -18,8 +18,8 @@ function App() {
 	const [modal, setModal] = useState(false);
 	const [connecting, setConnecting] = useStateWithCallbackLazy(false);
 	const [connected, setConnected] = useState(false);
-	const [address, setAddress] = useState("");
-	const [address2, setAddress2] = useState("");
+	const [ownerAddress, setOwnerAddress] = useState("");
+	const [allowanceSpenderAddress, setAllowanceSpenderAddress] = useState("");
 	const [signer, setSigner] = useState(null);
 	const [ethBalance, setEthBalance] = useState("");
 	const [tNodeBalance, setTNodeBalance] = useState("");
@@ -50,7 +50,7 @@ function App() {
 		setType("");
 		setConnected(false);
 		setConnecting(false);
-		setAddress("");
+		setOwnerAddress("");
 	};
 
 	const connectToMetaMask = async () => {
@@ -62,7 +62,7 @@ function App() {
 				const signer = await provider.getSigner();
 				if (provider.network.chainId === 42) {
 					setType("Metamask");
-					setAddress(address[0]);
+					setOwnerAddress(address[0]);
 					setSigner(signer);
 					setConnected(true);
 					setModal(false);
@@ -89,31 +89,31 @@ function App() {
 	};
 
 	const fetchETHBalance = useCallback(() => {
-		getETHBalance(address)
+		getETHBalance(ownerAddress)
 			.then((res) => {
 				setEthBalance(parseFloat(res.balance));
 			})
 			.catch((err) => {
 				console.log(err.message);
 			});
-	}, [address]);
+	}, [ownerAddress]);
 
 	const fetchTNodeBalance = useCallback(async () => {
 		try {
-			const data = await getTNodeBalance(address);
+			const data = await getTNodeBalance(ownerAddress);
 			setTNodeBalance(data.balance);
 		} catch (err) {
 			console.log(err.message);
 		}
-	}, [address]);
+	}, [ownerAddress]);
 
 	const handleChange = (e) => {
-		setAddress2(e.target.value);
+		setAllowanceSpenderAddress(e.target.value);
 	};
 
 	const fetchAllowance = (e) => {
 		e.preventDefault();
-		getAllowance(address, address2)
+		getAllowance(ownerAddress, allowanceSpenderAddress)
 			.then((res) => {
 				console.log(res.allowance);
 				setAllowance(parseFloat(res.allowance));
@@ -121,6 +121,7 @@ function App() {
 			.catch((err) => {
 				console.log(err.message);
 			});
+		setAllowanceSpenderAddress("");
 	};
 
 	useEffect(() => {
@@ -141,7 +142,6 @@ function App() {
 	const handleApprove = (e) => {
 		e.preventDefault();
 		setApproving(true);
-		console.log("Hello");
 		const amount = parseFloat(approvedAmount).toFixed(10);
 		approveToken(spenderAddress, amount, signer)
 			.then(async (response) => {
@@ -187,74 +187,35 @@ function App() {
 				setApproving(false);
 				console.log(err.message);
 			});
+		setApprovedAmount("");
+		setSpenderAddress("");
 	};
 
 	return (
 		<>
-			<Container maxWidth="sm">
+			<Container maxWidth="sm" className="main-container">
 				<Navbar walletConnected={connected} type={type} onModalOpen={open} />
-				<section className="main-wallet">
-					{connected ? (
-						<>
-							<h3 className="main-header">Account Info</h3>
-							<p className="wallet-address">
-								Wallet Address:{" "}
-								{`${address}`.substring(0, 6) + "..." + `${address}`.substring(37, 42)}
-							</p>
-							<p className="wallet-address">
-								Wallet Balance:{" "}
-								{parseFloat(ethBalance) > 0 ? parseFloat(ethBalance).toFixed(6) : "0.000000"} ETH
-							</p>
-
-							<p className="wallet-address">
-								tNode Token Balance:{" "}
-								{parseFloat(tNodeBalance) > 0 ? parseFloat(tNodeBalance).toFixed(2) : "0.00"} tNode
-							</p>
-						</>
-					) : (
-						<p>Connect Wallet to get wallet information</p>
-					)}
-				</section>
-				{connected ? (
-					<section className="allowance">
-						<h3>Allowance Method</h3>
-						<form onSubmit={fetchAllowance}>
-							<input
-								type="text"
-								placeholder="Spender address"
-								required
-								value={address2}
-								onChange={handleChange}
-							/>
-							<button type="submit">Submit</button>
-						</form>
-						<div className="display-allowance">
-							Allowance: {allowance ? parseFloat(allowance).toFixed(2) : "0.00"}
-						</div>
-					</section>
-				) : null}
-				{connected ? (
-					<section className="approve">
-						<h3>Approve Method</h3>
-						<form onSubmit={handleApprove}>
-							<input
-								type="text"
-								placeholder="Spender address"
-								required
-								value={spenderAddress}
-								onChange={handleSpenderAddress}
-							/>
-							<input
-								type="text"
-								placeholder="Amount"
-								required
-								value={approvedAmount}
-								onChange={handleAmount}
-							/>
-							<button type="Submit">Approve</button>
-						</form>
-					</section>
-				) : null}
+				<Account
+					connected={connected}
+					ownerAddress={ownerAddress}
+					ethBalance={ethBalance}
+					tNodeBalance={tNodeBalance}
+				/>
+				<Allowance
+					connected={connected}
+					fetchAllowance={fetchAllowance}
+					allowanceSpenderAddress={allowanceSpenderAddress}
+					handleChange={handleChange}
+					allowance={allowance}
+				/>
+				<Approve
+					connected={connected}
+					handleAmount={handleAmount}
+					handleApprove={handleApprove}
+					spenderAddress={spenderAddress}
+					handleSpenderAddress={handleSpenderAddress}
+					approvedAmount={approvedAmount}
+				/>
 			</Container>
 			<ConnectModal
 				modal={modal}
@@ -262,7 +223,7 @@ function App() {
 				connect={connect}
 				connecting={connecting}
 				connected={connected}
-				address={address}
+				address={ownerAddress}
 				disconnect={disconnect}
 			/>
 		</>
