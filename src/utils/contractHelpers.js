@@ -77,3 +77,21 @@ export const approveToken = (address, amount, signer) =>
 			});
 		}
 	});
+
+export const transferToken = (address, amount, signer) =>
+	new Promise(async (resolve, reject) => {
+		try {
+			const tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, signer);
+			const result = await tokenContract.transfer(address, ethers.utils.parseUnits(amount, 18));
+
+			resolve({
+				error: false,
+				data: result,
+			});
+		} catch (err) {
+			reject({
+				error: true,
+				message: err.message,
+			});
+		}
+	});

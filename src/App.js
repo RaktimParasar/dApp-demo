@@ -5,12 +5,13 @@ import { useStateWithCallbackLazy } from "use-state-with-callback";
 import Container from "@material-ui/core/Container";
 
 import { ConnectModal } from "./components/modals";
-import { Navbar, Account, Approve, Allowance } from "./components";
+import { Navbar, Account, Approve, Allowance, Transfer } from "./components";
 import {
 	getETHBalance,
 	getTNodeBalance,
 	approveToken,
 	getAllowance,
+	transferToken,
 } from "./utils/contractHelpers";
 
 function App() {
@@ -27,6 +28,9 @@ function App() {
 	const [approvedAmount, setApprovedAmount] = useState("0");
 	const [spenderAddress, setSpenderAddress] = useState("");
 	const [allowance, setAllowance] = useState("");
+	const [isTransfer, setIsTransfer] = useState(false);
+	const [transferToAddress, setTransferToAddress] = useState("");
+	const [transferAmount, setTransferAmount] = useState("0");
 
 	// 0x874b6cA6143102Ebd8aAc31Be0Bd1Ac4210aA250
 
@@ -191,6 +195,65 @@ function App() {
 		setSpenderAddress("");
 	};
 
+	const handleTransferAddress = (e) => {
+		setTransferToAddress(e.target.value);
+	};
+
+	const handleTransferAmount = (e) => {
+		setTransferAmount(e.target.value);
+	};
+
+	const handleTransfer = (e) => {
+		e.preventDefault();
+		setIsTransfer(true);
+		const amount = parseFloat(transferAmount).toFixed(10);
+		transferToken(transferToAddress, amount, signer)
+			.then(async (response) => {
+				notification["info"]({
+					key: "transfer-processing-notification",
+					message: "Transaction processing",
+					description: `Your transfer of ${transferAmount} is being processed. You can view the transaction here`,
+					btn: (
+						<a
+							href={`https://kovan.etherscan.io/tx/${response.data.hash}`}
+							target="_blank"
+							rel="noreferrer noopener"
+						>
+							View on Etherscan
+						</a>
+					),
+					duration: 0,
+				});
+				await response.data.wait();
+				notification.close("transfer-processing-notification");
+				notification["success"]({
+					message: "Transaction successful",
+					description: `Your transfer of ${transferAmount} is successful. You can view the transaction here`,
+					btn: (
+						<a
+							href={`https://kovan.etherscan.io/tx/${response.data.hash}`}
+							target="_blank"
+							rel="noreferrer noopener"
+						>
+							View on Etherscan
+						</a>
+					),
+					duration: 3,
+				});
+				setIsTransfer(false);
+			})
+			.catch((err) => {
+				notification["error"]({
+					message: "Transaction error",
+					description: `Your transfer of ${transferAmount} couldn't be processed. Something went wrong. Please try again`,
+				});
+				setIsTransfer(false);
+				console.log(err.message);
+			});
+		setTransferAmount("");
+		setTransferToAddress("");
+	};
+
 	return (
 		<>
 			<Container maxWidth="sm" className="main-container">
@@ -215,6 +278,14 @@ function App() {
 					spenderAddress={spenderAddress}
 					handleSpenderAddress={handleSpenderAddress}
 					approvedAmount={approvedAmount}
+				/>
+				<Transfer
+					connected={connected}
+					handleTransfer={handleTransfer}
+					transferAmount={transferAmount}
+					transferToAddress={transferToAddress}
+					handleTransferAddress={handleTransferAddress}
+					handleTransferAmount={handleTransferAmount}
 				/>
 			</Container>
 			<ConnectModal
